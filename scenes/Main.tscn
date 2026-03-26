@@ -1,9 +1,7 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/Game.gd" id="2"]
-[ext_resource type="Texture2D" path="res://assets/icon_moon.svg" id="3"]
-[ext_resource type="Texture2D" path="res://assets/icon_sun.svg" id="4"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1")
