@@ -24,8 +24,7 @@ const BOTTOM_BAR_HEIGHT := 40.0
 @onready var bottom_bar := $HUD/BottomBar
 
 var dark_mode := true
-
-# Theme toggle uses text glyphs — no icon textures needed
+var title_screen_scene := preload("res://scenes/TitleScreen.tscn")
 
 func _enter_tree() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -44,6 +43,8 @@ func _ready() -> void:
 	game.call_deferred("set_score_callback", Callable(self, "_update_score"))
 	game.call_deferred("set_banner_callback", Callable(self, "_set_banner"))
 	game.call_deferred("set_bottom_margin", BOTTOM_BAR_HEIGHT)
+
+	_show_title_screen()
 
 	slider.value_changed.connect(_on_challenge_changed)
 	paddle_slider.value_changed.connect(_on_paddle_changed)
@@ -141,6 +142,29 @@ func _style_all_buttons(fg: Color) -> void:
 	var gr_h := _make_btn_style(ha, hb, fg, 0, 3, 0, 3, 0, 1, 1, 1)
 	_style_btn(exit_btn, gr_n, gr_h, fg)
 
+func _show_title_screen() -> void:
+	get_tree().paused = true
+	var title := title_screen_scene.instantiate()
+	# Style title screen labels
+	var fg := Color(0.95, 0.95, 0.95) if dark_mode else Color(0.12, 0.12, 0.12)
+	var title_label: Label = title.get_node("VBox/Title")
+	title_label.add_theme_font_size_override("font_size", 72)
+	title_label.add_theme_color_override("font_color", fg)
+	var subtitle: Label = title.get_node("VBox/Subtitle")
+	subtitle.add_theme_font_size_override("font_size", 18)
+	subtitle.add_theme_color_override("font_color", Color(fg, 0.5))
+	var click_label: Label = title.get_node("VBox/ClickLabel")
+	click_label.add_theme_font_size_override("font_size", 20)
+	click_label.add_theme_color_override("font_color", fg)
+	var credit: Label = title.get_node("VBox/Credit")
+	credit.add_theme_font_size_override("font_size", 14)
+	credit.add_theme_color_override("font_color", Color(fg, 0.35))
+	title.start_game.connect(_on_title_dismissed)
+	add_child(title)
+
+func _on_title_dismissed() -> void:
+	get_tree().paused = false
+
 func _on_exit_pressed() -> void:
 	get_tree().quit()
 
@@ -175,7 +199,15 @@ func _on_viewport_resized() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
 		if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_MINIMIZED:
-			get_tree().paused = false
+			# Don't auto-unpause if title screen is still showing
+			if not _has_title_screen():
+				get_tree().paused = false
+
+func _has_title_screen() -> bool:
+	for child in get_children():
+		if child is CanvasLayer and child.has_signal("start_game"):
+			return true
+	return false
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:

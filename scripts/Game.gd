@@ -224,6 +224,6 @@ func _draw() -> void:
 	var n: int = trail.size()
 	for i in range(n):
 		var t: float = float(i) / float(max(1, n - 1))
-		var a: float = lerp(0.1, 0.6, 1.0 - t)
-		draw_circle(trail[i], ball_radius * lerp(0.5, 1.0, 1.0 - t), Color(fg_color, a))
+		var a: float = lerp(0.1, 0.6, t)
+		draw_circle(trail[i], ball_radius * lerp(0.5, 1.0, t), Color(fg_color, a))
 	draw_circle(ball_pos, ball_radius, fg_color)
