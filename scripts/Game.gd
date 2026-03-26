@@ -30,6 +30,11 @@ var _set_banner := Callable()
 var trail := PackedVector2Array()
 var trail_max := 18
 
+var dark_mode := true
+var bg_color := Color(0.25, 0.25, 0.25)
+var fg_color := Color(1, 1, 1)
+var line_color := Color(0.5, 0.5, 0.5)
+
 func set_score_callback(cb: Callable) -> void:
 	_set_score = cb
 	_emit_score()
@@ -56,6 +61,18 @@ func set_ai_enabled(on: bool) -> void:
 
 func set_ai_difficulty(v: float) -> void:
 	ai_difficulty = clamp(v, 1.0, 3.0)
+
+func set_dark_mode(on: bool) -> void:
+	dark_mode = on
+	if dark_mode:
+		bg_color = Color(0.25, 0.25, 0.25)
+		fg_color = Color(1, 1, 1)
+		line_color = Color(0.5, 0.5, 0.5)
+	else:
+		bg_color = Color(0.92, 0.92, 0.92)
+		fg_color = Color(0.1, 0.1, 0.1)
+		line_color = Color(0.65, 0.65, 0.65)
+	queue_redraw()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -84,7 +101,9 @@ func _process(delta: float) -> void:
 
 func _refresh_field_size() -> void:
 	var vp := get_viewport().get_visible_rect().size
-	field_size = Vector2(vp.x, max(0.0, vp.y - bottom_margin))
+	if vp.x < 1.0 or vp.y < 1.0:
+		return
+	field_size = Vector2(vp.x, max(1.0, vp.y - bottom_margin))
 
 func _center_paddles() -> void:
 	p1_y = field_size.y * 0.5
@@ -190,21 +209,21 @@ func reset_round(direction:int=1) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, field_size), Color(0.25, 0.25, 0.25))
+	draw_rect(Rect2(Vector2.ZERO, field_size), bg_color)
 	var dash_h: float = 16.0
 	var gap: float = 12.0
 	var x: float = field_size.x * 0.5
 	var y: float = 0.0
 	while y < field_size.y:
-		draw_rect(Rect2(Vector2(x - 2.0, y), Vector2(4.0, dash_h)), Color(0.5, 0.5, 0.5))
+		draw_rect(Rect2(Vector2(x - 2.0, y), Vector2(4.0, dash_h)), line_color)
 		y += dash_h + gap
 	var p1_pos := Vector2(paddle_margin, p1_y - paddle_size.y * 0.5)
 	var p2_pos := Vector2(field_size.x - paddle_margin - paddle_size.x, p2_y - paddle_size.y * 0.5)
-	draw_rect(Rect2(p1_pos, paddle_size), Color(1,1,1))
-	draw_rect(Rect2(p2_pos, paddle_size), Color(1,1,1))
+	draw_rect(Rect2(p1_pos, paddle_size), fg_color)
+	draw_rect(Rect2(p2_pos, paddle_size), fg_color)
 	var n: int = trail.size()
 	for i in range(n):
 		var t: float = float(i) / float(max(1, n - 1))
 		var a: float = lerp(0.1, 0.6, 1.0 - t)
-		draw_circle(trail[i], ball_radius * lerp(0.5, 1.0, 1.0 - t), Color(1,1,1,a))
-	draw_circle(ball_pos, ball_radius, Color(1,1,1))
+		draw_circle(trail[i], ball_radius * lerp(0.5, 1.0, 1.0 - t), Color(fg_color, a))
+	draw_circle(ball_pos, ball_radius, fg_color)

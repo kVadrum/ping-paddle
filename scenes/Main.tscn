@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/Game.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/icon_moon.svg" id="3"]
+[ext_resource type="Texture2D" path="res://assets/icon_sun.svg" id="4"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1")
@@ -24,16 +26,43 @@ horizontal_alignment = 1
 vertical_alignment = 1
 text = "0 : 0"
 
-[node name="ExitButton" type="Button" parent="HUD"]
+[node name="TopRight" type="HBoxContainer" parent="HUD"]
 anchor_left = 1.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_left = -48.0
-offset_top = 8.0
-offset_right = -8.0
+offset_left = -220.0
+offset_top = 10.0
+offset_right = -10.0
 offset_bottom = 40.0
+theme_override_constants/separation = 16
+alignment = 2
+
+[node name="ThemeButton" type="Button" parent="HUD/TopRight"]
+layout_mode = 2
+custom_minimum_size = Vector2(32, 28)
+text = "*"
+tooltip_text = "Toggle dark/light (T)"
+
+[node name="WindowGroup" type="HBoxContainer" parent="HUD/TopRight"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="MinButton" type="Button" parent="HUD/TopRight/WindowGroup"]
+layout_mode = 2
+custom_minimum_size = Vector2(32, 28)
+tooltip_text = "Minimize"
+
+[node name="WinToggleButton" type="Button" parent="HUD/TopRight/WindowGroup"]
+layout_mode = 2
+custom_minimum_size = Vector2(32, 28)
+tooltip_text = "Toggle fullscreen/windowed"
+
+[node name="ExitButton" type="Button" parent="HUD/TopRight/WindowGroup"]
+layout_mode = 2
+custom_minimum_size = Vector2(32, 28)
 text = "X"
+tooltip_text = "Quit (Esc)"
 
 [node name="WinBanner" type="ColorRect" parent="HUD"]
 visible = false
@@ -58,88 +87,81 @@ vertical_alignment = 1
 text = "Player 1 Wins!\nPress R to Restart"
 autowrap_mode = 2
 
-[node name="BottomBar" type="ColorRect" parent="HUD"]
-color = Color(0.2, 0.2, 0.2, 1)
+[node name="BottomBar" type="PanelContainer" parent="HUD"]
 anchor_left = 0.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -56.0
+offset_top = -40.0
 
-[node name="ControlsLabel" type="Label" parent="HUD/BottomBar"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_right = 520.0
-vertical_alignment = 1
-text = "P1: W/S   P2: O/L   P: Pause   C: Continue   R: Reset   Challenge:"
+[node name="MarginContainer" type="MarginContainer" parent="HUD/BottomBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_bottom = 0
 
-[node name="ChallengeSlider" type="HSlider" parent="HUD/BottomBar"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 520.0
-offset_top = 12.0
-offset_right = 680.0
-offset_bottom = -12.0
+[node name="HBox" type="HBoxContainer" parent="HUD/BottomBar/MarginContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="KeysLabel" type="Label" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "P1: W/S   P2: O/L   P: Pause   G: Go   R: Reset"
+
+[node name="Sep1" type="VSeparator" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+
+[node name="SpeedLabel" type="Label" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Speed"
+
+[node name="ChallengeSlider" type="HSlider" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+custom_minimum_size = Vector2(120, 0)
 min_value = 1.0
 max_value = 3.0
 step = 0.05
 value = 1.0
 
-[node name="PaddleLabel" type="Label" parent="HUD/BottomBar"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 690.0
-vertical_alignment = 1
-text = "  Paddle:"
+[node name="Sep2" type="VSeparator" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
 
-[node name="PaddleSlider" type="HSlider" parent="HUD/BottomBar"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 760.0
-offset_top = 12.0
-offset_right = 920.0
-offset_bottom = -12.0
+[node name="PaddleLabel" type="Label" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Paddle"
+
+[node name="PaddleSlider" type="HSlider" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+custom_minimum_size = Vector2(120, 0)
 min_value = 1.0
 max_value = 3.0
 step = 0.25
 value = 1.0
 
-[node name="AIToggle" type="CheckBox" parent="HUD/BottomBar"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 930.0
-vertical_alignment = 1
-text = "AI Opp."
+[node name="Sep3" type="VSeparator" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
 
-[node name="AIDiffLabel" type="Label" parent="HUD/BottomBar"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 1060.0
-vertical_alignment = 1
-text = " AI:"
+[node name="AIToggle" type="CheckBox" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "AI"
 
-[node name="AIDiffSlider" type="HSlider" parent="HUD/BottomBar"]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 1090.0
-offset_top = 12.0
-offset_right = 1250.0
-offset_bottom = -12.0
+[node name="AIDiffLabel" type="Label" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Difficulty"
+
+[node name="AIDiffSlider" type="HSlider" parent="HUD/BottomBar/MarginContainer/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+custom_minimum_size = Vector2(120, 0)
 min_value = 1.0
 max_value = 3.0
 step = 0.25
