@@ -18,7 +18,7 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
 offset_top = 8.0
-offset_bottom = 120.0
+offset_bottom = 140.0
 grow_horizontal = 2
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -29,16 +29,16 @@ anchor_left = 1.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_left = -220.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = 40.0
-theme_override_constants/separation = 16
+offset_left = -380.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = 70.0
+theme_override_constants/separation = 24
 alignment = 2
 
 [node name="ThemeButton" type="Button" parent="HUD/TopRight"]
 layout_mode = 2
-custom_minimum_size = Vector2(32, 28)
+custom_minimum_size = Vector2(56, 44)
 text = "*"
 tooltip_text = "Toggle dark/light (T)"
 
@@ -48,17 +48,17 @@ theme_override_constants/separation = 1
 
 [node name="MinButton" type="Button" parent="HUD/TopRight/WindowGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(32, 28)
+custom_minimum_size = Vector2(56, 44)
 tooltip_text = "Minimize"
 
 [node name="WinToggleButton" type="Button" parent="HUD/TopRight/WindowGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(32, 28)
+custom_minimum_size = Vector2(56, 44)
 tooltip_text = "Toggle fullscreen/windowed"
 
 [node name="ExitButton" type="Button" parent="HUD/TopRight/WindowGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(32, 28)
+custom_minimum_size = Vector2(56, 44)
 text = "X"
 tooltip_text = "Quit (Esc)"
 
@@ -76,10 +76,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -40.0
-offset_right = 320.0
-offset_bottom = 40.0
+offset_left = -400.0
+offset_top = -60.0
+offset_right = 400.0
+offset_bottom = 60.0
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "Player 1 Wins!\nPress R to Restart"
@@ -90,19 +90,19 @@ anchor_left = 0.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -40.0
+offset_top = -72.0
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD/BottomBar"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_bottom = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 8
 
 [node name="HBox" type="HBoxContainer" parent="HUD/BottomBar/MarginContainer"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 
 [node name="KeysLabel" type="Label" parent="HUD/BottomBar/MarginContainer/HBox"]
 layout_mode = 2
@@ -120,7 +120,7 @@ text = "Speed"
 [node name="ChallengeSlider" type="HSlider" parent="HUD/BottomBar/MarginContainer/HBox"]
 layout_mode = 2
 size_flags_vertical = 4
-custom_minimum_size = Vector2(120, 0)
+custom_minimum_size = Vector2(140, 24)
 min_value = 1.0
 max_value = 3.0
 step = 0.05
@@ -137,7 +137,7 @@ text = "Paddle"
 [node name="PaddleSlider" type="HSlider" parent="HUD/BottomBar/MarginContainer/HBox"]
 layout_mode = 2
 size_flags_vertical = 4
-custom_minimum_size = Vector2(120, 0)
+custom_minimum_size = Vector2(140, 24)
 min_value = 1.0
 max_value = 3.0
 step = 0.25
@@ -159,7 +159,7 @@ text = "Difficulty"
 [node name="AIDiffSlider" type="HSlider" parent="HUD/BottomBar/MarginContainer/HBox"]
 layout_mode = 2
 size_flags_vertical = 4
-custom_minimum_size = Vector2(120, 0)
+custom_minimum_size = Vector2(140, 24)
 min_value = 1.0
 max_value = 3.0
 step = 0.25
