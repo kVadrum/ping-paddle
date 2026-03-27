@@ -94,6 +94,10 @@ var bg_color   := Color(0.25, 0.25, 0.25)  ## Field background
 var fg_color   := Color(1, 1, 1)            ## Paddles, ball, text
 var line_color := Color(0.5, 0.5, 0.5)      ## Center line dashes
 
+# ─── Score Flash ──────────────────────────────────────────────────────────────
+## Brief white/dark flash when a point is scored, for visual impact.
+var _flash_alpha := 0.0
+
 # ─── Audio Players ───────────────────────────────────────────────────────────
 ## Created once in _ready(), reused for all sound effects.
 var _sfx_paddle : AudioStreamPlayer
@@ -140,7 +144,7 @@ func set_challenge(v: float) -> void:
 
 func set_paddle_scale(v: float) -> void:
 	## Adjusts paddle height. Larger paddles = easier rallies.
-	var s := clamp(v, 1.0, 3.0)
+	var s: float = clamp(v, 1.0, 3.0)
 	paddle_size = Vector2(BASE_PADDLE_SIZE.x, BASE_PADDLE_SIZE.y * s)
 
 func set_ai_enabled(on: bool) -> void:
@@ -182,6 +186,10 @@ func _process(delta: float) -> void:
 	else:
 		_update_ball(delta)
 
+	# Fade out the score flash
+	if _flash_alpha > 0.0:
+		_flash_alpha = max(0.0, _flash_alpha - delta * 4.0)
+
 	# Build the trail behind the ball
 	trail.append(ball_pos)
 	if trail.size() > TRAIL_LENGTH:
@@ -198,7 +206,7 @@ func handle_resized() -> void:
 	## Called by Main.gd when the viewport size changes.
 	_refresh_field_size()
 	# Keep paddles within bounds after resize
-	var half := paddle_size.y * 0.5
+	var half: float = paddle_size.y * 0.5
 	p1_y = clamp(p1_y, half, field_size.y - half)
 	p2_y = clamp(p2_y, half, field_size.y - half)
 	queue_redraw()
@@ -237,7 +245,7 @@ func _handle_input(delta: float) -> void:
 			p2_y += paddle_speed * delta
 
 	# Clamp both paddles to the field
-	var half := paddle_size.y * 0.5
+	var half: float = paddle_size.y * 0.5
 	p1_y = clamp(p1_y, half, field_size.y - half)
 	p2_y = clamp(p2_y, half, field_size.y - half)
 
@@ -258,7 +266,7 @@ func _ai_move_p2(delta: float) -> void:
 		_ai_timer = _ai_interval
 
 		# Predict where ball will reach P2's paddle X position
-		var target_y := _ai_predict_y() if ai_difficulty >= 2.0 else ball_pos.y
+		var target_y: float = _ai_predict_y() if ai_difficulty >= 2.0 else ball_pos.y
 
 		# Add noise — less noise at higher difficulty for tighter tracking
 		var noise_range: float = lerp(AI_NOISE_EASY, AI_NOISE_HARD,
@@ -269,7 +277,7 @@ func _ai_move_p2(delta: float) -> void:
 	# Move toward target with speed proportional to difficulty
 	var max_speed: float = paddle_speed * lerp(AI_SPEED_EASY, AI_SPEED_HARD,
 		(ai_difficulty - 1.0) / 2.0)
-	var dy := _ai_target_y - p2_y
+	var dy: float = _ai_target_y - p2_y
 
 	# Dead zone — don't jitter when close enough
 	var deadzone: float = lerp(AI_DEADZONE_EASY, AI_DEADZONE_HARD,
@@ -287,25 +295,25 @@ func _ai_predict_y() -> float:
 		# Ball is moving away from P2 — just track current Y
 		return ball_pos.y
 
-	var paddle_x := field_size.x - PADDLE_MARGIN - paddle_size.x
-	var dx := paddle_x - ball_pos.x
+	var paddle_x: float = field_size.x - PADDLE_MARGIN - paddle_size.x
+	var dx: float = paddle_x - ball_pos.x
 	if dx <= 0.0:
 		return ball_pos.y
 
 	# Time for ball to reach paddle
-	var t := dx / ball_vel.x
+	var t: float = dx / ball_vel.x
 	# Predicted raw Y (may be outside field)
-	var raw_y := ball_pos.y + ball_vel.y * t
+	var raw_y: float = ball_pos.y + ball_vel.y * t
 
 	# Simulate wall bounces by "folding" the Y position back into the field
 	# using modular arithmetic on a reflected coordinate system
-	var h := field_size.y - BALL_RADIUS * 2.0
+	var h: float = field_size.y - BALL_RADIUS * 2.0
 	if h <= 0.0:
 		return ball_pos.y
-	var adjusted := raw_y - BALL_RADIUS
+	var adjusted: float = raw_y - BALL_RADIUS
 	# Number of full reflections
-	var periods := int(abs(adjusted) / h)
-	var remainder := fmod(abs(adjusted), h)
+	var periods: int = int(abs(adjusted) / h)
+	var remainder: float = fmod(abs(adjusted), h)
 	if adjusted < 0.0:
 		periods += 1
 		remainder = h - remainder
@@ -367,10 +375,10 @@ func _update_ball(delta: float) -> void:
 	# ── Player 1 paddle hit ─────────────────────────────────────────────
 	if p1_rect.intersects(ball_rect) and ball_vel.x < 0.0:
 		ball_pos.x = p1_rect.position.x + p1_rect.size.x + BALL_RADIUS
-		var accel := HIT_ACCEL + HIT_ACCEL_CHALLENGE * (challenge - 1.0)
+		var accel: float = HIT_ACCEL + HIT_ACCEL_CHALLENGE * (challenge - 1.0)
 		ball_vel.x = abs(ball_vel.x) * accel
 		# Angle the return based on where the ball hit the paddle
-		var offset := (ball_pos.y - (p1_rect.position.y + p1_rect.size.y * 0.5)) \
+		var offset: float = (ball_pos.y - (p1_rect.position.y + p1_rect.size.y * 0.5)) \
 			/ (paddle_size.y * 0.5)
 		ball_vel.y = clamp(
 			ball_vel.y + offset * (200.0 * challenge),
@@ -381,9 +389,9 @@ func _update_ball(delta: float) -> void:
 	# ── Player 2 paddle hit ─────────────────────────────────────────────
 	elif p2_rect.intersects(ball_rect) and ball_vel.x > 0.0:
 		ball_pos.x = p2_rect.position.x - BALL_RADIUS
-		var accel := HIT_ACCEL + HIT_ACCEL_CHALLENGE * (challenge - 1.0)
+		var accel: float = HIT_ACCEL + HIT_ACCEL_CHALLENGE * (challenge - 1.0)
 		ball_vel.x = -abs(ball_vel.x) * accel
-		var offset := (ball_pos.y - (p2_rect.position.y + p2_rect.size.y * 0.5)) \
+		var offset: float = (ball_pos.y - (p2_rect.position.y + p2_rect.size.y * 0.5)) \
 			/ (paddle_size.y * 0.5)
 		ball_vel.y = clamp(
 			ball_vel.y + offset * (200.0 * challenge),
@@ -396,6 +404,7 @@ func _update_ball(delta: float) -> void:
 		p2_score += 1
 		_emit_score()
 		_sfx_score.play()
+		_flash_alpha = 0.35  # Brief screen flash for impact
 		_check_win()
 		if not game_over:
 			_start_serve(1)  # Serve toward the scorer's opponent
@@ -403,6 +412,7 @@ func _update_ball(delta: float) -> void:
 		p1_score += 1
 		_emit_score()
 		_sfx_score.play()
+		_flash_alpha = 0.35
 		_check_win()
 		if not game_over:
 			_start_serve(-1)
@@ -453,10 +463,10 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, field_size), bg_color)
 
 	# Center court dashed line
-	var dash_h := 16.0
-	var gap    := 12.0
-	var center_x := field_size.x * 0.5
-	var y := 0.0
+	var dash_h: float = 16.0
+	var gap: float    = 12.0
+	var center_x: float = field_size.x * 0.5
+	var y: float = 0.0
 	while y < field_size.y:
 		draw_rect(Rect2(Vector2(center_x - 2.0, y), Vector2(4.0, dash_h)), line_color)
 		y += dash_h + gap
@@ -469,7 +479,7 @@ func _draw() -> void:
 	draw_rect(Rect2(p2_pos, paddle_size), fg_color)
 
 	# Ball trail — fades from transparent (oldest) to semi-opaque (newest)
-	var n := trail.size()
+	var n: int = trail.size()
 	for i in range(n):
 		var t: float = float(i) / float(max(1, n - 1))  # 0=oldest, 1=newest
 		var alpha: float = lerp(0.1, 0.6, t)
@@ -479,6 +489,12 @@ func _draw() -> void:
 	# Ball
 	draw_circle(ball_pos, BALL_RADIUS, fg_color)
 
+	# Score flash overlay — brief white/dark pulse on point scored
+	if _flash_alpha > 0.0:
+		var flash_color := Color(1, 1, 1, _flash_alpha) if dark_mode \
+			else Color(0, 0, 0, _flash_alpha)
+		draw_rect(Rect2(Vector2.ZERO, field_size), flash_color)
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  PROCEDURAL AUDIO
@@ -487,7 +503,7 @@ func _draw() -> void:
 func _make_beep_player(hz: float, duration: float) -> AudioStreamPlayer:
 	## Generates a short sine-wave beep and wraps it in an AudioStreamPlayer.
 	## This gives us retro Pong sound effects with zero asset files.
-	var samples := int(SFX_SAMPLE_RATE * duration)
+	var samples: int = int(SFX_SAMPLE_RATE * duration)
 	var audio := AudioStreamWAV.new()
 	audio.mix_rate = SFX_SAMPLE_RATE
 	audio.format = AudioStreamWAV.FORMAT_8_BITS
@@ -497,9 +513,9 @@ func _make_beep_player(hz: float, duration: float) -> AudioStreamPlayer:
 	data.resize(samples)
 	for i in range(samples):
 		# Sine wave with a quick linear fade-out to avoid clicks
-		var t := float(i) / float(samples)
-		var envelope := 1.0 - t  # Linear decay
-		var sample := sin(TAU * hz * float(i) / SFX_SAMPLE_RATE) * envelope
+		var t: float = float(i) / float(samples)
+		var envelope: float = 1.0 - t  # Linear decay
+		var sample: float = sin(TAU * hz * float(i) / SFX_SAMPLE_RATE) * envelope
 		# Convert float [-1, 1] to unsigned byte [0, 255]
 		data[i] = int((sample * 0.5 + 0.5) * 255.0)
 	audio.data = data
