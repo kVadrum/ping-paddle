@@ -2,7 +2,7 @@
 .godot/
 *.import
 *.translation
-export_presets.cfg
+# export_presets.cfg — tracked (no secrets, just build config)
 
 # Secrets
 .env
@@ -22,5 +22,6 @@ Thumbs.db
 *.tmp
 
 # Build / export
+build/
 builds/
 *.zip
