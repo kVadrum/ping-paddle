@@ -37,6 +37,11 @@ const BOTTOM_BAR_HEIGHT := 40.0  ## Height reserved for the controls bar
 @onready var ai_diff         := $HUD/BottomBar/MarginContainer/HBox/AIDiffSlider
 @onready var bottom_bar      := $HUD/BottomBar
 
+# ─── Fonts ───────────────────────────────────────────────────────────────────
+## Serif for the title, sans-serif for everything else — classic modern pairing.
+var font_serif := SystemFont.new()
+var font_sans  := SystemFont.new()
+
 # ─── State ───────────────────────────────────────────────────────────────────
 var dark_mode := true
 var title_screen_scene := preload("res://scenes/TitleScreen.tscn")
@@ -64,16 +69,24 @@ func _ready() -> void:
 	# Enforce minimum window size to prevent layout collapse
 	DisplayServer.window_set_min_size(Vector2i(800, 500))
 
+	# Initialize fonts — serif for display text, sans for UI
+	font_serif.font_names = PackedStringArray(["Noto Serif", "Liberation Serif", "DejaVu Serif"])
+	font_serif.antialiasing = TextServer.FONT_ANTIALIASING_LCD
+	font_sans.font_names = PackedStringArray(["Noto Sans", "Liberation Sans", "DejaVu Sans"])
+	font_sans.antialiasing = TextServer.FONT_ANTIALIASING_LCD
+
 	# HUD and banner must respond during pause (for buttons, win text)
 	hud.process_mode = Node.PROCESS_MODE_ALWAYS
 	$HUD/TopRight.process_mode = Node.PROCESS_MODE_ALWAYS
 	win_banner.process_mode = Node.PROCESS_MODE_ALWAYS
 
-	# Score label styling
+	# Score label — large serif numerals, subtle outline for depth
+	score_label.add_theme_font_override("font", font_serif)
 	score_label.add_theme_font_size_override("font_size", 96)
 	score_label.add_theme_constant_override("outline_size", 2)
 
-	# Win banner styling
+	# Win banner — serif for the big moment
+	banner_label.add_theme_font_override("font", font_serif)
 	banner_label.add_theme_font_size_override("font_size", 48)
 
 	# Connect Game signals
@@ -148,21 +161,33 @@ func _show_title_screen() -> void:
 	# Style to match current theme
 	var fg := Color(0.95, 0.95, 0.95) if dark_mode else Color(0.12, 0.12, 0.12)
 
+	# Title — large serif for the brand name
 	var title_label: Label = title.get_node("VBox/Title")
+	title_label.add_theme_font_override("font", font_serif)
 	title_label.add_theme_font_size_override("font_size", 72)
 	title_label.add_theme_color_override("font_color", fg)
+	title_label.add_theme_constant_override("outline_size", 2)
+	title_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.3))
 
+	# Subtitle — light sans-serif, lower opacity for hierarchy
 	var subtitle: Label = title.get_node("VBox/Subtitle")
-	subtitle.add_theme_font_size_override("font_size", 18)
-	subtitle.add_theme_color_override("font_color", Color(fg, 0.5))
+	subtitle.add_theme_font_override("font", font_sans)
+	subtitle.add_theme_font_size_override("font_size", 16)
+	subtitle.add_theme_color_override("font_color", Color(fg, 0.45))
+	subtitle.uppercase = true
+	subtitle.add_theme_constant_override("line_spacing", 4)
 
+	# Call to action — sans-serif, readable
 	var click_label: Label = title.get_node("VBox/ClickLabel")
-	click_label.add_theme_font_size_override("font_size", 20)
+	click_label.add_theme_font_override("font", font_sans)
+	click_label.add_theme_font_size_override("font_size", 18)
 	click_label.add_theme_color_override("font_color", fg)
 
+	# Credit line — small sans-serif, subtle
 	var credit: Label = title.get_node("VBox/Credit")
-	credit.add_theme_font_size_override("font_size", 14)
-	credit.add_theme_color_override("font_color", Color(fg, 0.35))
+	credit.add_theme_font_override("font", font_sans)
+	credit.add_theme_font_size_override("font_size", 13)
+	credit.add_theme_color_override("font_color", Color(fg, 0.3))
 
 	title.start_game.connect(_on_title_dismissed)
 	add_child(title)
@@ -322,14 +347,105 @@ func _apply_theme() -> void:
 	style.content_margin_bottom = 6.0
 	bottom_bar.add_theme_stylebox_override("panel", style)
 
-	# Bottom bar labels — all match the foreground color
+	# Bottom bar labels — sans-serif, match foreground
 	for label in [keys_label, speed_label, paddle_label, ai_diff_label]:
-		label.add_theme_color_override("font_color", fg)
+		label.add_theme_font_override("font", font_sans)
+		label.add_theme_font_size_override("font_size", 13)
+		label.add_theme_color_override("font_color", Color(fg, 0.7))
 
 	# AI checkbox — lock all color states so hover doesn't change text color
+	ai_toggle.add_theme_font_override("font", font_sans)
+	ai_toggle.add_theme_font_size_override("font_size", 13)
 	for color_name in ["font_color", "font_hover_color",
 			"font_pressed_color", "font_focus_color"]:
-		ai_toggle.add_theme_color_override(color_name, fg)
+		ai_toggle.add_theme_color_override(color_name, Color(fg, 0.7))
+
+	# Sliders — custom track and grabber for clean, modern look
+	_style_all_sliders(fg)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SLIDER STYLING
+# ══════════════════════════════════════════════════════════════════════════════
+
+func _style_all_sliders(fg: Color) -> void:
+	## Styles all HSlider controls with a minimal modern look:
+	## thin track, small round grabber, consistent with the theme.
+	for s in [slider, paddle_slider, ai_diff]:
+		_style_slider(s, fg)
+
+func _style_slider(s: HSlider, fg: Color) -> void:
+	## Applies a clean flat style to a single slider.
+	var accent := Color(fg, 0.5)     # Filled portion
+	var track_bg := Color(fg, 0.15)  # Unfilled track
+
+	# Track (unfilled portion) — thin, rounded
+	var track := StyleBoxFlat.new()
+	track.bg_color = track_bg
+	track.corner_radius_top_left = 2
+	track.corner_radius_top_right = 2
+	track.corner_radius_bottom_left = 2
+	track.corner_radius_bottom_right = 2
+	track.content_margin_top = 2.0
+	track.content_margin_bottom = 2.0
+
+	# Filled portion (grabber area left of thumb)
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = accent
+	fill.corner_radius_top_left = 2
+	fill.corner_radius_top_right = 2
+	fill.corner_radius_bottom_left = 2
+	fill.corner_radius_bottom_right = 2
+	fill.content_margin_top = 2.0
+	fill.content_margin_bottom = 2.0
+
+	# Grabber (thumb) — small circle via highly rounded rect
+	var grabber := StyleBoxFlat.new()
+	grabber.bg_color = fg
+	grabber.corner_radius_top_left = 6
+	grabber.corner_radius_top_right = 6
+	grabber.corner_radius_bottom_left = 6
+	grabber.corner_radius_bottom_right = 6
+	grabber.content_margin_left = 6.0
+	grabber.content_margin_right = 6.0
+	grabber.content_margin_top = 6.0
+	grabber.content_margin_bottom = 6.0
+
+	# Grabber on hover — slightly larger/brighter
+	var grabber_hover := StyleBoxFlat.new()
+	grabber_hover.bg_color = Color(fg, 0.85)
+	grabber_hover.corner_radius_top_left = 7
+	grabber_hover.corner_radius_top_right = 7
+	grabber_hover.corner_radius_bottom_left = 7
+	grabber_hover.corner_radius_bottom_right = 7
+	grabber_hover.content_margin_left = 7.0
+	grabber_hover.content_margin_right = 7.0
+	grabber_hover.content_margin_top = 7.0
+	grabber_hover.content_margin_bottom = 7.0
+
+	s.add_theme_stylebox_override("slider", track)
+	s.add_theme_stylebox_override("grabber_area", fill)
+	s.add_theme_stylebox_override("grabber_area_highlight", fill)
+	s.add_theme_icon_override("grabber", _make_circle_texture(12, fg))
+	s.add_theme_icon_override("grabber_highlight", _make_circle_texture(14, Color(fg, 0.85)))
+	s.add_theme_icon_override("grabber_disabled", _make_circle_texture(12, Color(fg, 0.3)))
+
+func _make_circle_texture(diameter: int, color: Color) -> ImageTexture:
+	## Creates a small circular texture for slider grabbers.
+	## Procedural — no image files needed.
+	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
+	var center := Vector2(diameter * 0.5, diameter * 0.5)
+	var radius := diameter * 0.5
+	for x in range(diameter):
+		for y_px in range(diameter):
+			var dist := Vector2(x + 0.5, y_px + 0.5).distance_to(center)
+			if dist <= radius - 0.5:
+				img.set_pixel(x, y_px, color)
+			elif dist <= radius + 0.5:
+				# Anti-aliased edge
+				var edge_alpha: float = 1.0 - (dist - (radius - 0.5))
+				img.set_pixel(x, y_px, Color(color, color.a * edge_alpha))
+	return ImageTexture.create_from_image(img)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
