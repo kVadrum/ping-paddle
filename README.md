@@ -1,14 +1,17 @@
 # Ping Paddle
 
-A classic paddle-and-ball game inspired by Pong (1972), built with Godot 4.5 and GDScript. Zero dependencies, pure procedural rendering.
+A classic paddle-and-ball game inspired by Pong (1972), built with Godot 4.5 and GDScript. Zero dependencies, pure procedural rendering, procedural audio — no sprites, no textures, no sound files.
 
 ## Features
 
 - 2-player local (W/S vs O/L) or vs AI opponent
+- AI with trajectory prediction at higher difficulties
 - Adjustable ball speed, paddle size, and AI difficulty
 - Dark/light theme toggle
 - Window management (fullscreen, windowed, minimize)
 - Ball trail effect
+- Procedural retro sound effects (paddle hit, wall bounce, score)
+- Serve delay between points
 - Title screen
 
 ## Controls
