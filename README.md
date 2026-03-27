@@ -10,7 +10,7 @@ Zero dependencies. Pure procedural rendering — no sprites, no textures. Proced
 - **AI trajectory prediction** at higher difficulties — the AI doesn't just track, it predicts
 - **Adjustable** ball speed, paddle size, and AI difficulty via bottom bar sliders
 - **Dark/light theme** toggle with full UI theming
-- **Window management** — fullscreen, windowed (1920x1080), minimize
+- **Window management** — fullscreen, windowed (1280x720), minimize
 - **Ball trail** effect with fade and size falloff
 - **Score flash** — brief screen pulse when a point is scored
 - **Serve delay** — short pause between points for rhythm
