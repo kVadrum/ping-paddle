@@ -3,6 +3,7 @@
 ## Stack
 - Godot 4.5 (GDScript only, no C#, no plugins)
 - Pure procedural rendering via `_draw()` — no sprites or textures
+- Procedural audio via `AudioStreamWAV` — no sound files
 - Zero external dependencies
 
 ## Structure
@@ -12,15 +13,18 @@ scenes/
   TitleScreen.tscn    — title/splash screen overlay
 scripts/
   Main.gd            — HUD logic, input routing, theme, window management
-  Game.gd            — game loop, physics, rendering, AI
+  Game.gd            — game loop, physics, rendering, AI, sound
   TitleScreen.gd     — title screen dismiss logic
 ```
 
 ## Conventions
 - All rendering is procedural (`_draw()` in Game.gd) — no sprite assets
+- All audio is procedural (sine wave beeps generated at runtime)
 - Theme colors (dark/light) are managed in Main.gd and pushed to Game.gd
 - Game.gd owns gameplay state; Main.gd owns UI state
-- Communication between Main and Game uses setter methods + callbacks
+- Game.gd communicates to Main.gd via signals (`score_changed`, `banner_changed`)
+- Main.gd pushes settings to Game.gd via setter methods
+- Pause state is centralized in Main.gd via PauseReason enum
 - Window management (fullscreen/windowed/minimize) handled in Main.gd
 
 ## Running
