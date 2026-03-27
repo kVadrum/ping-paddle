@@ -12,7 +12,7 @@
 extends Node
 
 # ─── Layout Constants ────────────────────────────────────────────────────────
-const BOTTOM_BAR_HEIGHT := 40.0  ## Height reserved for the controls bar
+const BOTTOM_BAR_HEIGHT := 72.0  ## Height reserved for the controls bar
 
 # ─── Node References ─────────────────────────────────────────────────────────
 @onready var game            := $Game
@@ -82,12 +82,12 @@ func _ready() -> void:
 
 	# Score label — large serif numerals, subtle outline for depth
 	score_label.add_theme_font_override("font", font_serif)
-	score_label.add_theme_font_size_override("font_size", 96)
-	score_label.add_theme_constant_override("outline_size", 2)
+	score_label.add_theme_font_size_override("font_size", 120)
+	score_label.add_theme_constant_override("outline_size", 3)
 
 	# Win banner — serif for the big moment
 	banner_label.add_theme_font_override("font", font_serif)
-	banner_label.add_theme_font_size_override("font_size", 48)
+	banner_label.add_theme_font_size_override("font_size", 56)
 
 	# Connect Game signals
 	game.score_changed.connect(_update_score)
@@ -164,7 +164,7 @@ func _show_title_screen() -> void:
 	# Title — large serif for the brand name
 	var title_label: Label = title.get_node("VBox/Title")
 	title_label.add_theme_font_override("font", font_serif)
-	title_label.add_theme_font_size_override("font_size", 72)
+	title_label.add_theme_font_size_override("font_size", 84)
 	title_label.add_theme_color_override("font_color", fg)
 	title_label.add_theme_constant_override("outline_size", 2)
 	title_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.3))
@@ -172,7 +172,7 @@ func _show_title_screen() -> void:
 	# Subtitle — light sans-serif, lower opacity for hierarchy
 	var subtitle: Label = title.get_node("VBox/Subtitle")
 	subtitle.add_theme_font_override("font", font_sans)
-	subtitle.add_theme_font_size_override("font_size", 16)
+	subtitle.add_theme_font_size_override("font_size", 18)
 	subtitle.add_theme_color_override("font_color", Color(fg, 0.45))
 	subtitle.uppercase = true
 	subtitle.add_theme_constant_override("line_spacing", 4)
@@ -180,13 +180,13 @@ func _show_title_screen() -> void:
 	# Call to action — sans-serif, readable
 	var click_label: Label = title.get_node("VBox/ClickLabel")
 	click_label.add_theme_font_override("font", font_sans)
-	click_label.add_theme_font_size_override("font_size", 18)
+	click_label.add_theme_font_size_override("font_size", 22)
 	click_label.add_theme_color_override("font_color", fg)
 
 	# Credit line — small sans-serif, subtle
 	var credit: Label = title.get_node("VBox/Credit")
 	credit.add_theme_font_override("font", font_sans)
-	credit.add_theme_font_size_override("font_size", 13)
+	credit.add_theme_font_size_override("font_size", 15)
 	credit.add_theme_color_override("font_color", Color(fg, 0.3))
 
 	title.start_game.connect(_on_title_dismissed)
@@ -347,15 +347,15 @@ func _apply_theme() -> void:
 	style.content_margin_bottom = 6.0
 	bottom_bar.add_theme_stylebox_override("panel", style)
 
-	# Bottom bar labels — sans-serif, match foreground
+	# Bottom bar labels — sans-serif, generous sizing
 	for label in [keys_label, speed_label, paddle_label, ai_diff_label]:
 		label.add_theme_font_override("font", font_sans)
-		label.add_theme_font_size_override("font_size", 13)
+		label.add_theme_font_size_override("font_size", 18)
 		label.add_theme_color_override("font_color", Color(fg, 0.7))
 
-	# AI checkbox — lock all color states so hover doesn't change text color
+	# AI checkbox
 	ai_toggle.add_theme_font_override("font", font_sans)
-	ai_toggle.add_theme_font_size_override("font_size", 13)
+	ai_toggle.add_theme_font_size_override("font_size", 18)
 	for color_name in ["font_color", "font_hover_color",
 			"font_pressed_color", "font_focus_color"]:
 		ai_toggle.add_theme_color_override(color_name, Color(fg, 0.7))
@@ -379,56 +379,56 @@ func _style_slider(s: HSlider, fg: Color) -> void:
 	var accent := Color(fg, 0.5)     # Filled portion
 	var track_bg := Color(fg, 0.15)  # Unfilled track
 
-	# Track (unfilled portion) — thin, rounded
+	# Track (unfilled portion) — chunky, rounded
 	var track := StyleBoxFlat.new()
 	track.bg_color = track_bg
-	track.corner_radius_top_left = 2
-	track.corner_radius_top_right = 2
-	track.corner_radius_bottom_left = 2
-	track.corner_radius_bottom_right = 2
-	track.content_margin_top = 2.0
-	track.content_margin_bottom = 2.0
+	track.corner_radius_top_left = 4
+	track.corner_radius_top_right = 4
+	track.corner_radius_bottom_left = 4
+	track.corner_radius_bottom_right = 4
+	track.content_margin_top = 4.0
+	track.content_margin_bottom = 4.0
 
 	# Filled portion (grabber area left of thumb)
 	var fill := StyleBoxFlat.new()
 	fill.bg_color = accent
-	fill.corner_radius_top_left = 2
-	fill.corner_radius_top_right = 2
-	fill.corner_radius_bottom_left = 2
-	fill.corner_radius_bottom_right = 2
-	fill.content_margin_top = 2.0
-	fill.content_margin_bottom = 2.0
+	fill.corner_radius_top_left = 4
+	fill.corner_radius_top_right = 4
+	fill.corner_radius_bottom_left = 4
+	fill.corner_radius_bottom_right = 4
+	fill.content_margin_top = 4.0
+	fill.content_margin_bottom = 4.0
 
-	# Grabber (thumb) — small circle via highly rounded rect
+	# Grabber (thumb) — bold circle
 	var grabber := StyleBoxFlat.new()
 	grabber.bg_color = fg
-	grabber.corner_radius_top_left = 6
-	grabber.corner_radius_top_right = 6
-	grabber.corner_radius_bottom_left = 6
-	grabber.corner_radius_bottom_right = 6
-	grabber.content_margin_left = 6.0
-	grabber.content_margin_right = 6.0
-	grabber.content_margin_top = 6.0
-	grabber.content_margin_bottom = 6.0
+	grabber.corner_radius_top_left = 10
+	grabber.corner_radius_top_right = 10
+	grabber.corner_radius_bottom_left = 10
+	grabber.corner_radius_bottom_right = 10
+	grabber.content_margin_left = 10.0
+	grabber.content_margin_right = 10.0
+	grabber.content_margin_top = 10.0
+	grabber.content_margin_bottom = 10.0
 
 	# Grabber on hover — slightly larger/brighter
 	var grabber_hover := StyleBoxFlat.new()
 	grabber_hover.bg_color = Color(fg, 0.85)
-	grabber_hover.corner_radius_top_left = 7
-	grabber_hover.corner_radius_top_right = 7
-	grabber_hover.corner_radius_bottom_left = 7
-	grabber_hover.corner_radius_bottom_right = 7
-	grabber_hover.content_margin_left = 7.0
-	grabber_hover.content_margin_right = 7.0
-	grabber_hover.content_margin_top = 7.0
-	grabber_hover.content_margin_bottom = 7.0
+	grabber_hover.corner_radius_top_left = 11
+	grabber_hover.corner_radius_top_right = 11
+	grabber_hover.corner_radius_bottom_left = 11
+	grabber_hover.corner_radius_bottom_right = 11
+	grabber_hover.content_margin_left = 11.0
+	grabber_hover.content_margin_right = 11.0
+	grabber_hover.content_margin_top = 11.0
+	grabber_hover.content_margin_bottom = 11.0
 
 	s.add_theme_stylebox_override("slider", track)
 	s.add_theme_stylebox_override("grabber_area", fill)
 	s.add_theme_stylebox_override("grabber_area_highlight", fill)
-	s.add_theme_icon_override("grabber", _make_circle_texture(12, fg))
-	s.add_theme_icon_override("grabber_highlight", _make_circle_texture(14, Color(fg, 0.85)))
-	s.add_theme_icon_override("grabber_disabled", _make_circle_texture(12, Color(fg, 0.3)))
+	s.add_theme_icon_override("grabber", _make_circle_texture(20, fg))
+	s.add_theme_icon_override("grabber_highlight", _make_circle_texture(22, Color(fg, 0.85)))
+	s.add_theme_icon_override("grabber_disabled", _make_circle_texture(20, Color(fg, 0.3)))
 
 func _make_circle_texture(diameter: int, color: Color) -> ImageTexture:
 	## Creates a small circular texture for slider grabbers.
@@ -456,7 +456,7 @@ func _make_circle_texture(diameter: int, color: Color) -> ImageTexture:
 ## with shared borders, matching the look of native Linux title bar buttons.
 
 func _make_btn_style(bg_alpha: float, border_alpha: float, fg: Color,
-		r_tl := 3, r_tr := 3, r_bl := 3, r_br := 3,
+		r_tl := 5, r_tr := 5, r_bl := 5, r_br := 5,
 		bw_l := 1, bw_r := 1, bw_t := 1, bw_b := 1) -> StyleBoxFlat:
 	## Creates a StyleBoxFlat for button states with configurable corner radii
 	## and border widths. Used to build the connected button group effect.
@@ -471,10 +471,10 @@ func _make_btn_style(bg_alpha: float, border_alpha: float, fg: Color,
 	s.corner_radius_top_right    = r_tr
 	s.corner_radius_bottom_left  = r_bl
 	s.corner_radius_bottom_right = r_br
-	s.content_margin_left   = 6.0
-	s.content_margin_right  = 6.0
-	s.content_margin_top    = 2.0
-	s.content_margin_bottom = 2.0
+	s.content_margin_left   = 12.0
+	s.content_margin_right  = 12.0
+	s.content_margin_top    = 6.0
+	s.content_margin_bottom = 6.0
 	return s
 
 func _style_btn(btn: Button, normal: StyleBoxFlat, hovered: StyleBoxFlat,
@@ -485,7 +485,7 @@ func _style_btn(btn: Button, normal: StyleBoxFlat, hovered: StyleBoxFlat,
 	btn.add_theme_stylebox_override("hover", hovered)
 	btn.add_theme_stylebox_override("pressed", normal)  # No "stuck" pressed look
 	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	btn.add_theme_font_size_override("font_size", 12)
+	btn.add_theme_font_size_override("font_size", 18)
 	for color_name in ["font_color", "font_hover_color",
 			"font_pressed_color", "font_focus_color"]:
 		btn.add_theme_color_override(color_name, fg)
@@ -502,12 +502,12 @@ func _style_all_buttons(fg: Color) -> void:
 	var t_n := _make_btn_style(na, nb, fg)
 	var t_h := _make_btn_style(ha, hb, fg)
 	_style_btn(theme_btn, t_n, t_h, fg)
-	theme_btn.add_theme_font_size_override("font_size", 16)
+	theme_btn.add_theme_font_size_override("font_size", 24)
 
 	# Window group: [min | toggle | exit] — connected borders
 	# Left button: rounded left corners, flat right edge
-	var gl_n := _make_btn_style(na, nb, fg, 3, 0, 3, 0, 1, 0, 1, 1)
-	var gl_h := _make_btn_style(ha, hb, fg, 3, 0, 3, 0, 1, 0, 1, 1)
+	var gl_n := _make_btn_style(na, nb, fg, 5, 0, 5, 0, 1, 0, 1, 1)
+	var gl_h := _make_btn_style(ha, hb, fg, 5, 0, 5, 0, 1, 0, 1, 1)
 	_style_btn(min_btn, gl_n, gl_h, fg)
 	min_btn.text = "\u2014"  # Em dash — for minimize
 
@@ -517,6 +517,6 @@ func _style_all_buttons(fg: Color) -> void:
 	_style_btn(win_toggle_btn, gm_n, gm_h, fg)
 
 	# Right button: rounded right corners, flat left edge
-	var gr_n := _make_btn_style(na, nb, fg, 0, 3, 0, 3, 0, 1, 1, 1)
-	var gr_h := _make_btn_style(ha, hb, fg, 0, 3, 0, 3, 0, 1, 1, 1)
+	var gr_n := _make_btn_style(na, nb, fg, 0, 5, 0, 5, 0, 1, 1, 1)
+	var gr_h := _make_btn_style(ha, hb, fg, 0, 5, 0, 5, 0, 1, 1, 1)
 	_style_btn(exit_btn, gr_n, gr_h, fg)
