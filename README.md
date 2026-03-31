@@ -73,4 +73,4 @@ Everything is rendered via `_draw()` — rectangles, circles, and lines. Sound e
 
 MIT — see [LICENSE](LICENSE) for details.
 
-Copyright (c) 2026 KeMeK Network
+KeMeK Network © 2026
