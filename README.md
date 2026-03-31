@@ -4,6 +4,8 @@ A classic paddle-and-ball game inspired by Pong (1972), built with Godot 4.5 and
 
 Zero dependencies. Pure procedural rendering — no sprites, no textures. Procedural audio — no sound files. Everything is generated at runtime.
 
+![Ping Paddle gameplay](screenshot.png)
+
 ## Features
 
 - **2-player local** (W/S vs O/L) or **vs AI** opponent
