@@ -28,3 +28,10 @@ builds/
 
 CLAUDE.md
 STATE.md
+
+# workspace policy: local planning + env files never committed
+SPEC.md
+SPEC-*.md
+SPEC_*.md
+adrs/
+adr/
